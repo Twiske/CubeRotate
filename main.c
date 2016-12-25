@@ -2,13 +2,8 @@
 #include <stdio.h>
 #include <math.h>
 
-typedef struct{
-	float x;
-	float y;
-	float z;
-}Point;
+#include "framebuffer.h"
 
-typedef Point * Surface[4];
 
 void rotate(float angleX, float angleY, Point cube[8])
 {
@@ -27,6 +22,7 @@ void rotate(float angleX, float angleY, Point cube[8])
 		cube[i].z = z * cos(angleY) + y * sin(angleY);
 	}
 }
+
 float surfaceDepth(Surface surface)
 {
 	float averageDepth = 0;
@@ -35,18 +31,19 @@ float surfaceDepth(Surface surface)
 		averageDepth += surface[i]->z;
 	}
 	averageDepth /= 4;
+	return 0;
 }
 
 int main()
 {
 	Point cube[8] = {{-1,-1,-1},
 	                 {-1,-1, 1},
-					 {-1, 1,-1},
-					 {-1, 1, 1},
-					 { 1,-1,-1},
-					 { 1,-1, 1},
-					 { 1, 1,-1},
-					 { 1, 1, 1}};
+			 {-1, 1,-1},
+			 {-1, 1, 1},
+			 { 1,-1,-1},
+			 { 1,-1, 1},
+			 { 1, 1,-1},
+			 { 1, 1, 1}};
 					 
 
 	
@@ -60,25 +57,38 @@ int main()
 	
 	rotate(1.0, M_PI/2.0, cube);
 	
-	/*for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 8; i++)
 	{
 		// Scale to right size
-		cube[i].x = (cube[i].x + 1) * 30;
-		cube[i].y = (cube[i].y + 1) * 30;
-		cube[i].z = (cube[i].z + 1) * 30;
-	}*/
+		cube[i].x = (cube[i].x ) * 10;
+		cube[i].y = (cube[i].y ) * 10;
+		cube[i].z = (cube[i].z ) * 10;
+	}
 	
 	Surface * sortedSurfaces[6];
 	
-	
-	for (int j = 0; j < 6; j++)
+	while(1)
 	{
-		for (int i = 0; i < 4; i++)
+		clearFramebuffer();
+		/*
+		for (int i = 0; i < 8; i++)
 		{
-			printf("%f,%f,%f\n", surfaces[j][i]->x, surfaces[j][i]->y, surfaces[j][i]->z);
+			setDrawChar('0' + i);
+			drawPoint(&cube[i]);
+		}*/
+		for (int j = 0; j < 6; j++)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				setDrawChar(j + '1');
+				drawPoint(surfaces[j][i]);
+				//printf("%f,%f,%f\n", surfaces[j][i]->x, surfaces[j][i]->y, surfaces[j][i]->z);
+			}
 		}
+		printFramebuffer();
+		usleep(200 * 1000);
+		rotate(M_PI/40, M_PI/30.0, cube);
 	}
-	
 }
 
 
