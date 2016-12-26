@@ -2,10 +2,12 @@
 #include <stdio.h>
 #include <math.h>
 
+#define MATH_3D_IMPLEMENTATION
+#import "math_3d.h"
 #include "framebuffer.h"
 
-
-void rotate(float angleX, float angleY, Point cube[8])
+/*
+void rotate(float angleX, float angleY, vec3_t point)
 {
 	for (int i = 0; i < 8; i++)
 	{
@@ -21,8 +23,9 @@ void rotate(float angleX, float angleY, Point cube[8])
 		cube[i].y = y * cos(angleY) - z * sin(angleY);
 		cube[i].z = z * cos(angleY) + y * sin(angleY);
 	}
-}
+}*/
 
+/*
 float surfaceDepth(Surface surface)
 {
 	float averageDepth = 0;
@@ -32,11 +35,12 @@ float surfaceDepth(Surface surface)
 	}
 	averageDepth /= 4;
 	return 0;
-}
+}*/
 
 int main()
 {
-	Point cube[8] = {{-1,-1,-1},
+	mat4_t rotationMatrix = m4_rotation(M_PI/20, (vec3_t){1,.5,.4});
+	vec3_t cube[8] = {{-1,-1,-1},
 	                 {-1,-1, 1},
 			 {-1, 1,-1},
 			 {-1, 1, 1},
@@ -46,7 +50,7 @@ int main()
 			 { 1, 1, 1}};
 					 
 
-	
+
 	Surface surfaces[6] = {
 		{&cube[0], &cube[1], &cube[3], &cube[2]},
 		{&cube[4], &cube[5], &cube[7], &cube[6]},
@@ -55,39 +59,50 @@ int main()
 		{&cube[0], &cube[2], &cube[6], &cube[4]},
 		{&cube[1], &cube[3], &cube[7], &cube[5]}};
 	
-	rotate(1.0, M_PI/2.0, cube);
-	
+	//rotate(1.0, M_PI/2.0, cube);
+
 	for (int i = 0; i < 8; i++)
 	{
 		// Scale to right size
-		cube[i].x = (cube[i].x ) * 10;
-		cube[i].y = (cube[i].y ) * 10;
-		cube[i].z = (cube[i].z ) * 10;
+		cube[i].x = (cube[i].x ) * 20;
+		cube[i].y = (cube[i].y ) * 20;
+		cube[i].z = (cube[i].z ) * 20;
 	}
 	
-	Surface * sortedSurfaces[6];
+//	Surface * sortedSurfaces[6];
 	
 	while(1)
 	{
 		clearFramebuffer();
-		/*
+		
 		for (int i = 0; i < 8; i++)
 		{
+			
+			cube[i] = m4_mul_pos(rotationMatrix, cube[i]);
+		}
+		/*
+		for (int i = 0; i < 7; i++)
+		{
 			setDrawChar('0' + i);
-			drawPoint(&cube[i]);
+			//drawPoint(&cube[i]);
+			
+			drawLine(&cube[i], &cube[i+1]);
+			//printf("\n");
 		}*/
 		for (int j = 0; j < 6; j++)
 		{
-			for (int i = 0; i < 4; i++)
-			{
-				setDrawChar(j + '1');
-				drawPoint(surfaces[j][i]);
-				//printf("%f,%f,%f\n", surfaces[j][i]->x, surfaces[j][i]->y, surfaces[j][i]->z);
-			}
+			setDrawChar(j + '*');
+			//drawLine(surfaces[j][0], surfaces[j][1]);
+			//drawLine(surfaces[j][1], surfaces[j][2]);
+			//drawLine(surfaces[j][2], surfaces[j][3]);
+			//drawLine(surfaces[j][3], surfaces[j][0]);
+			drawTriangle(surfaces[j][0], surfaces[j][1], surfaces[j][2]);
+			drawTriangle(surfaces[j][0], surfaces[j][2], surfaces[j][3]);
 		}
 		printFramebuffer();
-		usleep(200 * 1000);
-		rotate(M_PI/40, M_PI/30.0, cube);
+		usleep(300 * 1000);
+		
+		//rotate(M_PI/40, M_PI/30.0, cube);
 	}
 }
 

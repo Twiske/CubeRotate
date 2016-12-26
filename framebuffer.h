@@ -1,18 +1,12 @@
+#include "math_3d.h"
 
-
-#define WIDTH 64
+#define WIDTH 128
 #define HEIGHT WIDTH
 
-typedef struct{
-	float x;
-	float y;
-	float z;
-}Point;
-
-typedef Point * Surface[4];
+typedef vec3_t * Surface[4];
 
 
 void setDrawChar(char color);
 void clearFramebuffer(void);
 void printFramebuffer(void);
-void drawPoint(Point * point);
+void drawPoint(vec3_t * point);
